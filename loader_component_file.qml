@@ -17,10 +17,12 @@ Rectangle{
     Component{
         id:colorComponent
         Rectangle{
-            id:colorPickerComponentComponent
+            id:colorPickerComponent
             width: 50
             height: 30
             signal colorPicked(color clr)
+
+//            property Item loader // 新添加，用于转换焦点
 
             function configureBorder(){
                 colorPickerComponent.border.width = colorPickerComponent.focus ? 2 : 0
@@ -32,6 +34,7 @@ Rectangle{
                 onClicked: {
                     colorPickerComponent.focus = true // 点击时，给焦点
                     colorPickerComponent.colorPicked(colorPickerComponent.color)
+//                    loader.focus = true // loader转换焦点 ##2
                 }
             }
 
@@ -69,8 +72,14 @@ Rectangle{
 //            coloredText.color = clr
 //        }
 
+        sourceComponent: colorComponent
         onLoaded: {
-
+            item.color = "red"
+            item.focus = true // iten初始的焦点,这里不光Loader.focus = item.focus = true
+//            item.loader = redColor // loader转换焦点 ##2
+        }
+        onFocusChanged: { // item.focus 与 Loader.focus一致
+            item.focus = focus
         }
     }
 
@@ -89,6 +98,15 @@ Rectangle{
 //        onColorPicked: {
 //            coloredText.color = clr
 //        }
+
+        sourceComponent: colorComponent
+        onLoaded: {
+            item.color = "blue"
+//            item.loader = blueColor // loader转换焦点 ##2
+        }
+        onFocusChanged: {
+            item.focus = focus
+        }
     }
 
     Loader{
@@ -105,5 +123,50 @@ Rectangle{
 //        onColorPicked: {
 //            coloredText.color = clr
 //        }
+
+        sourceComponent: colorComponent
+        onLoaded: {
+            item.color = "pink"
+//            item.loader = pinkColor // loader转换焦点 ##2
+        }
+        onFocusChanged: {
+            item.focus = focus
+        }
+    }
+
+    Connections{
+        target: redColor.item
+        onColorPicked:{
+            coloredText.color=clr
+            if(!redColor.focus){
+                redColor.focus = true
+                blueColor.focus = false
+                pinkColor.focus = false
+            }
+        }
+    }
+
+    Connections{
+        target: blueColor.item
+        onColorPicked:{
+            coloredText.color=clr
+            if(!blueColor.focus){
+                blueColor.focus = true
+                redColor.focus = false
+                pinkColor.focus = false
+            }
+        }
+    }
+
+    Connections{
+        target: pinkColor.item
+        onColorPicked:{
+            coloredText.color=clr
+            if(!pinkColor.focus){
+                pinkColor.focus = true
+                redColor.focus = false
+                blueColor.focus = false
+            }
+        }
     }
 }
